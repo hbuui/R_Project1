@@ -1,30 +1,81 @@
 ---
 title: "Project 1"
-author: "Hien Bui"
-date: "2025-03-31"
+author: "Hien Bui, Ana Martinez, Bryanna Partida"
+date: "2025-04-01"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# Load necessary libraries
+library(dplyr)
+library(geosphere)
+library(kableExtra)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
+# Read the datasets
+confirmed_df <- read.csv("time_series_covid19_confirmed_global.csv")
+deaths_df <- read.csv("time_series_covid19_deaths_global.csv")
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+#summary(confirmed_df)
+#summary(deaths_df)
+```
+## **Objective 1:Origin**
+```{r}
+# Select relevant columns 
+confirmed_first_day <- confirmed_df %>%
+  select(`Province.State`, `Country.Region`, X1.22.20)
 
-```{r cars}
-summary(cars)
+# Find the maximum number of confirmed cases on the first day
+max_confirmed <- max(confirmed_first_day$X1.22.20, na.rm = TRUE)
+
+# Filter for the rows with the maximum confirmed cases
+origin_confirmed <- confirmed_first_day %>%
+  filter(X1.22.20 == max_confirmed)
+
+print("Area with the most confirmed cases on 2020-01-22:")
+print(origin_confirmed)
+
+#Now we do it for deaths
+deaths_first_day <- deaths_df %>%
+  select(`Province.State`, `Country.Region`, X1.22.20)
+
+max_deaths <- max(deaths_first_day$X1.22.20, na.rm = TRUE)
+
+origin_deaths <- deaths_first_day %>%
+  filter(X1.22.20 == max_deaths)
+
+print("Area with the most deaths on 2020-01-22:")
+print(origin_deaths)
+
+#Predicting the origin
+
+# Assuming origin_confirmed is the data frame from the confirmed cases code
+predicted_origin_confirmed_province<-origin_confirmed$`Province.State`
+predicted_origin_confirmed_country <-origin_confirmed$`Country.Region`
+predicted_origin_deaths_province <- "Hubei"
+predicted_origin_deaths_country <- "China"
+
+if (predicted_origin_confirmed_province == predicted_origin_deaths_province &&
+    predicted_origin_confirmed_country == predicted_origin_deaths_country) {
+  print(paste("Based on the greatest number of confirmations and deaths on January 22, 2020,",
+              predicted_origin_confirmed_province, ",", predicted_origin_confirmed_country,
+              "is predicted to be the origin of COVID-19."))
+} else {
+  print(paste("The area with the most confirmed cases on January 22, 2020, was:",
+              predicted_origin_confirmed_province, ",", predicted_origin_confirmed_country))
+  print(paste("The area with the most deaths on January 22, 2020, was:",
+              predicted_origin_deaths_province, ",", predicted_origin_deaths_country))
+  print("Based on these findings, we can infer the potential origin.")
+}
 ```
 
-## Including Plots
+  ***We used these datasets of Covid-19 of confirmations and deaths to searched for the earliest recorded day to determine the day 1 of the infection. After we found that January 22,2020 was the first day, we proceeded to figure out the number of confirmed cases and deaths on that day. It was Hubei province of China that had the highest number of confirmed cases and death. And with that information, we were able to determine that Hubei was most likely the origin of the Covid-19 according to this datasets.***
 
-You can also embed plots, for example:
+## **Objective 2: Most recent area**
+```{r}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
