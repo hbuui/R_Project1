@@ -14,7 +14,7 @@ library(kableExtra)
 ```
 
 
-```{r}
+```{r echo=FALSE}
 # Read the datasets
 confirmed_df <- read.csv("time_series_covid19_confirmed_global.csv")
 deaths_df <- read.csv("time_series_covid19_deaths_global.csv")
@@ -76,7 +76,7 @@ if (predicted_origin_confirmed_province == predicted_origin_deaths_province &&
 }
 ```
 
-  ***We used these datasets of Covid-19 of confirmations and deaths to searched for the earliest recorded day to determine the day 1 of the infection. After we found that January 22,2020 was the first day, we proceeded to figure out the number of confirmed cases and deaths on that day. It was Hubei province of China that had the highest number of confirmed cases and death. And with that information, we were able to determine that Hubei was most likely the origin of the Covid-19 according to this datasets.***
+  ***We used these data sets of Covid-19 of confirmations and deaths to searched for the earliest recorded day to determine the day 1 of the infection. After we found that January 22,2020 was the first day, we proceeded to figure out the number of confirmed cases and deaths on that day. It was Hubei province of China that had the highest number of confirmed cases and death. And with that information, we were able to determine that Hubei was most likely the origin of the Covid-19 according to this data sets.***
 
 ## **Objective 2: Most recent area**
 
@@ -120,5 +120,37 @@ print("The most recent area to have a first confirmed case:")
 print(paste("Province/State:", most_recent_first_case_province))
 print(paste("Country/Region:", most_recent_first_case_country))
 print(paste("Date:", format(most_recent_first_case_date, "%Y-%m-%d")))
+```
+
+***We were able to identify that Pitcairn Islands of the United Kingdom is the most recent area to have a first confirmed case. By making a loop to iterates through the data sets to find the locations where cases changed to 0 to positive. And when combined with the if statements, we  can systematically examine each date's new case reports.***
+
+## **Objective 3: Distance from the origin**
+
+```{r}
+# Coordinates of Wuhan, China (Origin)
+origin_lon <- 112.2707
+origin_lat <- 30.9756
+origin_coords <- c(origin_lon, origin_lat)
+
+# Coordinates of Pitcairn Islands, UK (Most Recent First Case)
+recent_lon <- -130.1003
+recent_lat <- -25.0407
+recent_coords <- c(recent_lon, recent_lat)
+
+# Calculate the distance in meters using distm
+distance_meters <- geosphere::distm(origin_coords, recent_coords)
+print(paste("Distance in meters:", distance_meters))
+
+# Convert meters to miles
+distance_miles <- distance_meters * 0.000621371
+print(paste("Distance in miles:", distance_miles))
+
+# Format the output string
+recent_region <- "Pitcairn Islands, United Kingdom"
+origin_location <- "Wuhan, China"
+distance_miles_rounded <- round(distance_miles, 2) # Round to 2 decimal places
+
+output_statement <- paste(recent_region, "is", distance_miles_rounded, "miles away from", origin_location)
+print(output_statement)
 ```
 
