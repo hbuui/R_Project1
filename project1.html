@@ -365,14 +365,15 @@ deaths_df &lt;- read.csv(&quot;time_series_covid19_deaths_global.csv&quot;)
 #summary(deaths_df)</code></pre>
 <div id="objective-1origin" class="section level2">
 <h2><strong>Objective 1:Origin</strong></h2>
-<pre class="r"><code># Select relevant columns 
+<p><em>Private Diagnostic Laboratories</em></p>
+<pre class="r"><code>#finding columns for the first day
 confirmed_first_day &lt;- confirmed_df %&gt;%
   select(`Province.State`, `Country.Region`, X1.22.20)
 
-# Find the maximum number of confirmed cases on the first day
+#then the maximum number of confirmed cases on the first day
 max_confirmed &lt;- max(confirmed_first_day$X1.22.20, na.rm = TRUE)
 
-# Filter for the rows with the maximum confirmed cases
+#filter the rows with the maximum confirmed cases
 origin_confirmed &lt;- confirmed_first_day %&gt;%
   filter(X1.22.20 == max_confirmed)
 
@@ -381,6 +382,7 @@ print(&quot;Area with the most confirmed cases on 2020-01-22:&quot;)</code></pre
 <pre class="r"><code>print(origin_confirmed)</code></pre>
 <pre><code>##   Province.State Country.Region X1.22.20
 ## 1          Hubei          China      444</code></pre>
+<p><em>Global Health Union</em></p>
 <pre class="r"><code>#Now we do it for deaths
 deaths_first_day &lt;- deaths_df %&gt;%
   select(`Province.State`, `Country.Region`, X1.22.20)
@@ -395,9 +397,8 @@ print(&quot;Area with the most deaths on 2020-01-22:&quot;)</code></pre>
 <pre class="r"><code>print(origin_deaths)</code></pre>
 <pre><code>##   Province.State Country.Region X1.22.20
 ## 1          Hubei          China       17</code></pre>
-<pre class="r"><code>#Predicting the origin
-
-# Assuming origin_confirmed is the data frame from the confirmed cases code
+<p><em>Origin</em></p>
+<pre class="r"><code>#writing prediction of the origin
 predicted_origin_confirmed_province&lt;-origin_confirmed$`Province.State`
 predicted_origin_confirmed_country &lt;-origin_confirmed$`Country.Region`
 predicted_origin_deaths_province &lt;- &quot;Hubei&quot;
@@ -427,6 +428,48 @@ according to this datasets.</em></strong></p>
 </div>
 <div id="objective-2-most-recent-area" class="section level2">
 <h2><strong>Objective 2: Most recent area</strong></h2>
+<pre class="r"><code>#making variables to store the most recent first case information
+date_columns &lt;- names(confirmed_df)[5:ncol(confirmed_df)]
+most_recent_first_case_date &lt;- as.Date(&quot;2020-01-21&quot;) 
+#and initializing date before the first recorded date
+most_recent_first_case_province &lt;- NA
+most_recent_first_case_country &lt;- NA
+
+#loop through each row of the confirmed_df and the date columns
+for (i in 1:nrow(confirmed_df)) {
+  province &lt;- confirmed_df$`Province.State`[i]
+  country &lt;- confirmed_df$`Country.Region`[i]
+
+  first_case_found &lt;- FALSE
+  first_case_date &lt;- NA
+
+
+  for (date_col in date_columns) {
+    cases &lt;- confirmed_df[i, date_col]
+    if (!is.na(cases) &amp;&amp; cases &gt; 0) {
+      first_case_date &lt;- as.Date(gsub(&quot;X&quot;, &quot;&quot;, date_col), format = &quot;%m.%d.%y&quot;)
+      first_case_found &lt;- TRUE
+      break 
+#break from the inner loop once the first case is found for this location
+    }
+  }
+
+#updating the most recent first case if a later date is found
+  if (first_case_found &amp;&amp; first_case_date &gt; most_recent_first_case_date) {
+    most_recent_first_case_date &lt;- first_case_date
+    most_recent_first_case_province &lt;- province
+    most_recent_first_case_country &lt;- country
+  }
+}
+
+print(&quot;The most recent area to have a first confirmed case:&quot;)</code></pre>
+<pre><code>## [1] &quot;The most recent area to have a first confirmed case:&quot;</code></pre>
+<pre class="r"><code>print(paste(&quot;Province/State:&quot;, most_recent_first_case_province))</code></pre>
+<pre><code>## [1] &quot;Province/State: Pitcairn Islands&quot;</code></pre>
+<pre class="r"><code>print(paste(&quot;Country/Region:&quot;, most_recent_first_case_country))</code></pre>
+<pre><code>## [1] &quot;Country/Region: United Kingdom&quot;</code></pre>
+<pre class="r"><code>print(paste(&quot;Date:&quot;, format(most_recent_first_case_date, &quot;%Y-%m-%d&quot;)))</code></pre>
+<pre><code>## [1] &quot;Date: 2022-07-20&quot;</code></pre>
 </div>
 
 

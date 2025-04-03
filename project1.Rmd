@@ -22,22 +22,26 @@ deaths_df <- read.csv("time_series_covid19_deaths_global.csv")
 #summary(confirmed_df)
 #summary(deaths_df)
 ```
+
 ## **Objective 1:Origin**
+*Private Diagnostic Laboratories*
 ```{r}
-# Select relevant columns 
+#finding columns for the first day
 confirmed_first_day <- confirmed_df %>%
   select(`Province.State`, `Country.Region`, X1.22.20)
 
-# Find the maximum number of confirmed cases on the first day
+#then the maximum number of confirmed cases on the first day
 max_confirmed <- max(confirmed_first_day$X1.22.20, na.rm = TRUE)
 
-# Filter for the rows with the maximum confirmed cases
+#filter the rows with the maximum confirmed cases
 origin_confirmed <- confirmed_first_day %>%
   filter(X1.22.20 == max_confirmed)
 
 print("Area with the most confirmed cases on 2020-01-22:")
 print(origin_confirmed)
-
+```
+*Global Health Union*
+```{r}
 #Now we do it for deaths
 deaths_first_day <- deaths_df %>%
   select(`Province.State`, `Country.Region`, X1.22.20)
@@ -49,10 +53,10 @@ origin_deaths <- deaths_first_day %>%
 
 print("Area with the most deaths on 2020-01-22:")
 print(origin_deaths)
-
-#Predicting the origin
-
-# Assuming origin_confirmed is the data frame from the confirmed cases code
+```
+*Origin*
+```{r}
+#writing prediction of the origin
 predicted_origin_confirmed_province<-origin_confirmed$`Province.State`
 predicted_origin_confirmed_country <-origin_confirmed$`Country.Region`
 predicted_origin_deaths_province <- "Hubei"
@@ -75,7 +79,46 @@ if (predicted_origin_confirmed_province == predicted_origin_deaths_province &&
   ***We used these datasets of Covid-19 of confirmations and deaths to searched for the earliest recorded day to determine the day 1 of the infection. After we found that January 22,2020 was the first day, we proceeded to figure out the number of confirmed cases and deaths on that day. It was Hubei province of China that had the highest number of confirmed cases and death. And with that information, we were able to determine that Hubei was most likely the origin of the Covid-19 according to this datasets.***
 
 ## **Objective 2: Most recent area**
+
 ```{r}
 
+#making variables to store the most recent first case information
+date_columns <- names(confirmed_df)[5:ncol(confirmed_df)]
+most_recent_first_case_date <- as.Date("2020-01-21") 
+#and initializing date before the first recorded date
+most_recent_first_case_province <- NA
+most_recent_first_case_country <- NA
+
+#loop through each row of the confirmed_df and the date columns
+for (i in 1:nrow(confirmed_df)) {
+  province <- confirmed_df$`Province.State`[i]
+  country <- confirmed_df$`Country.Region`[i]
+
+  first_case_found <- FALSE
+  first_case_date <- NA
+
+
+  for (date_col in date_columns) {
+    cases <- confirmed_df[i, date_col]
+    if (!is.na(cases) && cases > 0) {
+      first_case_date <- as.Date(gsub("X", "", date_col), format = "%m.%d.%y")
+      first_case_found <- TRUE
+      break 
+#break from the inner loop once the first case is found for this location
+    }
+  }
+
+#updating the most recent first case if a later date is found
+  if (first_case_found && first_case_date > most_recent_first_case_date) {
+    most_recent_first_case_date <- first_case_date
+    most_recent_first_case_province <- province
+    most_recent_first_case_country <- country
+  }
+}
+
+print("The most recent area to have a first confirmed case:")
+print(paste("Province/State:", most_recent_first_case_province))
+print(paste("Country/Region:", most_recent_first_case_country))
+print(paste("Date:", format(most_recent_first_case_date, "%Y-%m-%d")))
 ```
 
