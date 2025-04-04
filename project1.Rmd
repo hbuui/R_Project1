@@ -127,30 +127,32 @@ print(paste("Date:", format(most_recent_first_case_date, "%Y-%m-%d")))
 ## **Objective 3: Distance from the origin**
 
 ```{r}
-# Coordinates of Wuhan, China (Origin)
+#coordinates of Wuhan, China 
 origin_lon <- 112.2707
 origin_lat <- 30.9756
 origin_coords <- c(origin_lon, origin_lat)
 
-# Coordinates of Pitcairn Islands, UK (Most Recent First Case)
+#coordinates of Pitcairn Islands, UK 
 recent_lon <- -130.1003
 recent_lat <- -25.0407
 recent_coords <- c(recent_lon, recent_lat)
 
-# Calculate the distance in meters using distm
+#calculate the distance in meters
 distance_meters <- geosphere::distm(origin_coords, recent_coords)
 print(paste("Distance in meters:", distance_meters))
 
-# Convert meters to miles
+#converting meters to miles
 distance_miles <- distance_meters * 0.000621371
 print(paste("Distance in miles:", distance_miles))
 
-# Format the output string
+#format the output string
 recent_region <- "Pitcairn Islands, United Kingdom"
 origin_location <- "Wuhan, China"
-distance_miles_rounded <- round(distance_miles, 2) # Round to 2 decimal places
+distance_miles_rounded <- round(distance_miles, 2) 
 
 output_statement <- paste(recent_region, "is", distance_miles_rounded, "miles away from", origin_location)
 print(output_statement)
 ```
+
+***By imputing the coordinates of the origin and the most recent reported case. Using the 'geosphere::distance',we got the distance between the Wuhan and Pitcairn Islands. But the result was in 'meters' so then we had to convert it into miles afterwards.***
 

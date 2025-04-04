@@ -473,32 +473,37 @@ reports.</em></strong></p>
 </div>
 <div id="objective-3-distance-from-the-origin" class="section level2">
 <h2><strong>Objective 3: Distance from the origin</strong></h2>
-<pre class="r"><code># Coordinates of Wuhan, China (Origin)
+<pre class="r"><code>#coordinates of Wuhan, China 
 origin_lon &lt;- 112.2707
 origin_lat &lt;- 30.9756
 origin_coords &lt;- c(origin_lon, origin_lat)
 
-# Coordinates of Pitcairn Islands, UK (Most Recent First Case)
+#coordinates of Pitcairn Islands, UK 
 recent_lon &lt;- -130.1003
 recent_lat &lt;- -25.0407
 recent_coords &lt;- c(recent_lon, recent_lat)
 
-# Calculate the distance in meters using distm
+#calculate the distance in meters
 distance_meters &lt;- geosphere::distm(origin_coords, recent_coords)
 print(paste(&quot;Distance in meters:&quot;, distance_meters))</code></pre>
 <pre><code>## [1] &quot;Distance in meters: 13936320.1801819&quot;</code></pre>
-<pre class="r"><code># Convert meters to miles
+<pre class="r"><code>#converting meters to miles
 distance_miles &lt;- distance_meters * 0.000621371
 print(paste(&quot;Distance in miles:&quot;, distance_miles))</code></pre>
 <pre><code>## [1] &quot;Distance in miles: 8659.62520667982&quot;</code></pre>
-<pre class="r"><code># Format the output string
+<pre class="r"><code>#format the output string
 recent_region &lt;- &quot;Pitcairn Islands, United Kingdom&quot;
 origin_location &lt;- &quot;Wuhan, China&quot;
-distance_miles_rounded &lt;- round(distance_miles, 2) # Round to 2 decimal places
+distance_miles_rounded &lt;- round(distance_miles, 2) 
 
 output_statement &lt;- paste(recent_region, &quot;is&quot;, distance_miles_rounded, &quot;miles away from&quot;, origin_location)
 print(output_statement)</code></pre>
 <pre><code>## [1] &quot;Pitcairn Islands, United Kingdom is 8659.63 miles away from Wuhan, China&quot;</code></pre>
+<p><strong><em>By imputing the coordinates of the origin and the most
+recent reported case. Using the ‘geosphere::distance’,we got the
+distance between the Wuhan and Pitcairn Islands. But the result was in
+‘meters’ so then we had to convert it into miles
+afterwards.</em></strong></p>
 </div>
 
 
