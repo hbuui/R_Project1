@@ -153,4 +153,87 @@ distance_miles_rounded <- round(distance_miles, 2) # Round to 2 decimal places
 output_statement <- paste(recent_region, "is", distance_miles_rounded, "miles away from", origin_location)
 print(output_statement)
 ```
+## **Objective 4: Risk Score Analysis**
+```{r}
+# Clean Data
+clean_deaths_df <- deaths_df %>%
+  filter(!(is.na(Long) | is.na(Lat) | Long == 0 | Lat == 0))
+clean_confirmed_df <- confirmed_df %>%
+  filter(!(is.na(Long) | is.na(Lat) | Long == 0 | Lat == 0))
+
+# Most recent date column
+latest_date <- tail(names(clean_confirmed_df), 1)
+
+# Group data by country and sum latest values
+total_confirmed <- clean_confirmed_df %>%
+  group_by(`Country.Region`) %>%
+  summarize(Confirmed = sum(!!sym(latest_date)), .groups = "drop")
+total_deaths <- clean_deaths_df %>%
+  group_by(`Country.Region`) %>%
+  summarize(Deaths = sum(!!sym(latest_date)), .groups = "drop")
+
+# Merge confirmed/death totals into one data frame
+risk_df <- merge(total_confirmed, total_deaths, by = "Country.Region")
+
+# Calculate risk score
+risk_df <- risk_df %>%
+  mutate(RiskScore = round((100 * Deaths / Confirmed), 2)) %>%
+  filter(!is.na(RiskScore) & Confirmed > 0)
+
+# Get global risk score
+total_global_confirmed <- sum(risk_df$Confirmed)
+total_global_deaths <- sum(risk_df$Deaths)
+global_risk_score <- round((100 * total_global_deaths / total_global_confirmed), 2)
+
+# Find countries with highest and lowest risk score
+lowest_risk_country <- risk_df %>%
+  filter(RiskScore == min(RiskScore)) %>%
+  arrange(desc(Confirmed)) %>%
+  slice(1)
+highest_risk_country <- risk_df %>%
+  filter(RiskScore == max(RiskScore)) %>%
+  arrange(desc(Confirmed)) %>%
+  slice(1)
+
+# Output
+lowest_risk_country
+highest_risk_country
+global_risk_score
+
+```
+ ***The area of the world with the lowest risk score is _Singapore_, with a risk score of 0.05%, a very low death rate relative to its high number of confirmed cases. On the other hand, the area with the highest risk score is _Yemen_, with a risk score of 29.07%, showing a much higher fatality rate compared to its case count. The global risk score is approximately 1.12%, this places both countries on opposite ends of the spectrum. Calculating risk scores can be helpful for identifying which regions are managing the disease more effectively or see who is under greater threat. Although it is important to consider that the metric has limitations. This metric does not account for testing availability, healthcare access, population demographics, all of which can greatly affect how the data is interpreted***
+
+## **Objective 5: Top 5 Countries by Confirmations and Deaths**
+```{r}
+# Most recent date column in the dataset
+latest_date <- tail(names(confirmed_df), 1)
+
+# Group confirmed cases by Country/Region and sum
+confirmed_totals <- confirmed_df %>%
+  group_by(Country.Region) %>%
+  summarise(Total_Confirmed = sum(!!sym(latest_date))) %>%
+  arrange(desc(Total_Confirmed)) %>%
+  head(5)
+
+# Group deaths by Country/Region and sum
+deaths_totals <- deaths_df %>%
+  group_by(Country.Region) %>%
+  summarise(Total_Deaths = sum(!!sym(latest_date))) %>%
+  arrange(desc(Total_Deaths)) %>%
+  head(5)
+
+# The top 5 countries by confirmations
+print("Top 5 Countries by Confirmed Cases")
+confirmed_totals %>%
+  kable(caption = paste("Top 5 Countries with Most Confirmed COVID-19 Cases as of", latest_date)) %>%
+  kable_styling(full_width = FALSE)
+
+# The top 5 countries by deaths
+print("Top 5 Countries by Deaths")
+deaths_totals %>%
+  kable(caption = paste("Top 5 Countries with Most COVID-19 Related Deaths as of", latest_date)) %>%
+  kable_styling(full_width = FALSE)
+
+```
+
 
