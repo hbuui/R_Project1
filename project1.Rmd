@@ -7,7 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-# Load necessary libraries
+# loading necessary libraries
 library(dplyr)
 library(geosphere)
 library(kableExtra)
@@ -15,7 +15,7 @@ library(kableExtra)
 
 
 ```{r echo=FALSE}
-# Read the datasets
+# reading the data sets
 confirmed_df <- read.csv("time_series_covid19_confirmed_global.csv")
 deaths_df <- read.csv("time_series_covid19_deaths_global.csv")
 
@@ -42,7 +42,7 @@ print(origin_confirmed)
 ```
 *Global Health Union*
 ```{r}
-#Now we do it for deaths
+#now we do it for deaths
 deaths_first_day <- deaths_df %>%
   select(`Province.State`, `Country.Region`, X1.22.20)
 
@@ -153,6 +153,9 @@ distance_miles_rounded <- round(distance_miles, 2) # Round to 2 decimal places
 output_statement <- paste(recent_region, "is", distance_miles_rounded, "miles away from", origin_location)
 print(output_statement)
 ```
+
+***By imputing the coordinates of the origin and the most recent reported case. Using the 'geosphere::distance',we got the distance between the Wuhan and Pitcairn Islands. But the result was in 'meters' so then we had to convert it into miles afterwards.***
+
 ## **Objective 4: Risk Score Analysis**
 ```{r}
 # Clean Data
@@ -201,6 +204,7 @@ highest_risk_country
 global_risk_score
 
 ```
+
  ***The area of the world with the lowest risk score is _Singapore_, with a risk score of 0.05%, a very low death rate relative to its high number of confirmed cases. On the other hand, the area with the highest risk score is _Yemen_, with a risk score of 29.07%, showing a much higher fatality rate compared to its case count. The global risk score is approximately 1.12%, this places both countries on opposite ends of the spectrum. Calculating risk scores can be helpful for identifying which regions are managing the disease more effectively or see who is under greater threat. Although it is important to consider that the metric has limitations. This metric does not account for testing availability, healthcare access, population demographics, all of which can greatly affect how the data is interpreted***
 
 ## **Objective 5: Top 5 Countries by Confirmations and Deaths**
